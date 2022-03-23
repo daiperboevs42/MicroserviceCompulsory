@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace CustomerAPI.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class CustomerController : Controller
     {
         // GET: CustomerController
