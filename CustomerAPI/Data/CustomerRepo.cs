@@ -1,27 +1,43 @@
 ﻿using CustomerAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CustomerAPI.Data
 {
     public class CustomerRepo : ICustomerRepo
     {
+        private readonly CustomerApiContext _context;
+
+        public CustomerRepo(CustomerApiContext context)
+        {
+            _context = context;
+        }
         public Customer CreateCustomer(Customer customerToCreate)
         {
-            throw new System.NotImplementedException();
+            _context.Attach(customerToCreate).State = EntityState.Added;
+            _context.SaveChanges();
+            return customerToCreate;
         }
 
         public Customer DeleteCustomer(int customerID)
         {
-            throw new System.NotImplementedException();
+            Customer customer = ReadById(customerID);
+            _context.Attach(customer).State = EntityState.Deleted;
+            _context.SaveChanges();
+
+            return customer;
         }
 
         public Customer EditCustomer(Customer customerToEdit)
         {
-            throw new System.NotImplementedException();
+            _context.Attach(customerToEdit).State = EntityState.Modified;
+            _context.SaveChanges();
+            return customerToEdit;
         }
 
         public Customer ReadById(int customerID)
         {
-            throw new System.NotImplementedException();
+            return _context.Customers.AsNoTracking().FirstOrDefault(o => o.customerID == customerID);
         }
     }
 }
