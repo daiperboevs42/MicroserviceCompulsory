@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CustomerAPI.Data;
+using CustomerAPI.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,80 +11,80 @@ namespace CustomerAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CustomerController : Controller
+    public class CustomerController : ControllerBase
     {
-        // GET: CustomerController
-        public ActionResult Index()
+        private readonly ICustomerRepo _custRepo;
+
+        public CustomerController(ICustomerRepo repos)
         {
-            return View();
+            _custRepo = repos;
         }
 
-        // GET: CustomerController/Details/5
-        public ActionResult Details(int id)
+        // GET: api/<CustomerController>
+        [HttpGet]
+        public IEnumerable<string> Get()
         {
-            return View();
+            return new string[] { "value1", "value2" };
         }
 
-        // GET: CustomerController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CustomerController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        // GET api/<CustomerController>/5
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                return Ok(_custRepo.ReadById(id));
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return NotFound(e.Message);
             }
         }
 
-        // GET: CustomerController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: CustomerController/Edit/5
+        // POST api/<CustomerController>
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Post([FromBody] Customer customer)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                return Ok(_custRepo.CreateCustomer(customer));
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return BadRequest(e.Message);
             }
         }
 
-        // GET: CustomerController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CustomerController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        // PUT api/<CustomerController>/5
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Customer customer)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (id != customer.customerID)
+                {
+                    return BadRequest("Parameter ID and owner ID have to be the same");
+                }
+
+                return Ok(_custRepo.EditCustomer(customer));
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return BadRequest(e.Message);
+            }
+        }
+
+        // DELETE api/<CustomerController>/5
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                return Ok(_custRepo.DeleteCustomer(id));
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
             }
         }
     }
