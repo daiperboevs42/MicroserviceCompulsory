@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CustomerAPI.Data
 {
-    public class CustomerRepo : ICustomerRepo
+    public class CustomerRepo : ICustomerRepo<Customer>
     {
         private readonly CustomerApiContext _context;
 
