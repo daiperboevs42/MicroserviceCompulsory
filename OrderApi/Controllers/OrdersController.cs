@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Data;
 using OrderApi.Infrastructure;
+using OrderApi.Models;
 using SharedModels;
+using Order = SharedModels.Order;
 
 namespace OrderApi.Controllers
 {
@@ -14,13 +16,16 @@ namespace OrderApi.Controllers
         IOrderRepository repository;
         IServiceGateway<ProductDto> productServiceGateway;
         IMessagePublisher messagePublisher;
+        IServiceGateway<CustomerDTO> customerServicegateway;
 
         public OrdersController(IRepository<Order> repos,
             IServiceGateway<ProductDto> gateway,
+            IServiceGateway<CustomerDTO> Cgateway,
             IMessagePublisher publisher)
         {
             repository = repos as IOrderRepository;
             productServiceGateway = gateway;
+            customerServicegateway = Cgateway;
             messagePublisher = publisher;
         }
 
@@ -54,28 +59,15 @@ namespace OrderApi.Controllers
 
             if (ProductItemsAvailable(order))
             {
-                try
-                {
-                    // Publish OrderStatusChangedMessage. If this operation
-                    // fails, the order will not be created
-                    messagePublisher.PublishOrderStatusChangedMessage(
-                        order.customerId, order.OrderLines, "completed");
 
-                    // Create order.
-                    order.Status = Order.OrderStatus.completed;
-                    var newOrder = repository.Add(order);
-                    return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
-                }
-                catch
-                {
-                    return StatusCode(500, "An error happened. Try again.");
-                }
-            }
-            else
+                if (order == null)
             {
-                // If there are not enough product items available.
-                return StatusCode(500, "Not enough items in stock.");
+                return BadRequest();
             }
+            if (ProductItemsAvailable(order) != null)
+            {
+                
+           
         }
 
         private bool ProductItemsAvailable(Order order)
@@ -123,6 +115,16 @@ namespace OrderApi.Controllers
             throw new NotImplementedException();
 
             // Add code to implement this method.
+        }
+        private bool CreditCheck(Order order)
+        {
+            var orderCustomer = customerServicegateway.Get(order.customerId);
+            // Call product service to get the product ordered.
+            if (orderCustomer.CreditStanding <= 0)
+            {
+                return false;
+            }
+            return true;
         }
 
     }
