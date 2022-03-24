@@ -53,6 +53,11 @@ namespace CustomerAPI
                 var dbInitializer = services.GetService<IDbInitializer>();
                 dbInitializer.Initialize(dbContext);
             }
+
+            // Create a message listener in a separate thread.
+            Task.Factory.StartNew(() =>
+                new MessageListener(app.ApplicationServices, cloudAMQPConnectionString).Start());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
