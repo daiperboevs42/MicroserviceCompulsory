@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SharedModels;
+using OrderApi.Models;
+using static OrderApi.Models.Order;
 
 namespace OrderApi.Data
 {

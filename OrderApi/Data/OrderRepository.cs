@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using SharedModels;
+
 using System;
+using OrderApi.Models;
 
 namespace OrderApi.Data
 {
@@ -19,7 +20,7 @@ namespace OrderApi.Data
         {
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
-            
+
             var newOrder = db.Orders.Add(entity).Entity;
             db.SaveChanges();
             return newOrder;

@@ -3,8 +3,8 @@ using System.Threading;
 using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApi.Data;
+using ProductApi.Models;
 
-using SharedModels;
 
 namespace ProductApi.Infrastructure
 {
@@ -28,7 +28,10 @@ namespace ProductApi.Infrastructure
             {
                 bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkCompleted", 
                     HandleOrderCompleted, x => x.WithTopic("completed"));
-
+                bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkCancelled",
+                    HandleOrderCancelled, x => x.WithTopic("cancelled"));
+                bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkShipped",
+                    HandleOrderShipped, x => x.WithTopic("shipped"));
                 // Add code to subscribe to other OrderStatusChanged events:
                 // * cancelled
                 // * shipped
@@ -68,6 +71,50 @@ namespace ProductApi.Infrastructure
                 }
             }
         }
+
+        private void HandleOrderCancelled(OrderStatusChangedMessage message)
+        {
+            // A service scope is created to get an instance of the product repository.
+            // When the service scope is disposed, the product repository instance will
+            // also be disposed.
+            using (var scope = provider.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var productRepos = services.GetService<IRepository<Product>>();
+
+                // Reserve items of ordered product (should be a single transaction).
+                // Beware that this operation is not idempotent.
+                foreach (var orderLine in message.OrderLines)
+                {
+                    var product = productRepos.Get(orderLine.ProductId);
+                    product.ItemsReserved -= orderLine.Quantity;
+                    productRepos.Edit(product);
+                }
+            }
+        }
+
+        private void HandleOrderShipped(OrderStatusChangedMessage message)
+        {
+            // A service scope is created to get an instance of the product repository.
+            // When the service scope is disposed, the product repository instance will
+            // also be disposed.
+            using (var scope = provider.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var productRepos = services.GetService<IRepository<Product>>();
+
+                // Reserve items of ordered product (should be a single transaction).
+                // Beware that this operation is not idempotent.
+                foreach (var orderLine in message.OrderLines)
+                {
+                    var product = productRepos.Get(orderLine.ProductId);
+                    product.ItemsInStock -= orderLine.Quantity;
+                    product.ItemsReserved -= orderLine.Quantity;
+                    productRepos.Edit(product);
+                }
+            }
+        }
+
 
     }
 }

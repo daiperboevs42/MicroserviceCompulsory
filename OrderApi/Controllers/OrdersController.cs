@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Data;
 using OrderApi.Infrastructure;
-using SharedModels;
+using OrderApi.Models;
 
 namespace OrderApi.Controllers
 {
@@ -12,15 +12,18 @@ namespace OrderApi.Controllers
     public class OrdersController : ControllerBase
     {
         IOrderRepository repository;
-        IServiceGateway<ProductDto> productServiceGateway;
+        IServiceGateway<ProductDTO> productServiceGateway;
+        IServiceGateway<CustomerDTO> customerServicegateway;
         IMessagePublisher messagePublisher;
 
         public OrdersController(IRepository<Order> repos,
-            IServiceGateway<ProductDto> gateway,
+            IServiceGateway<ProductDTO> gateway,
+            IServiceGateway<CustomerDTO> Cgateway,
             IMessagePublisher publisher)
         {
             repository = repos as IOrderRepository;
             productServiceGateway = gateway;
+            customerServicegateway = Cgateway;
             messagePublisher = publisher;
         }
 
@@ -92,13 +95,47 @@ namespace OrderApi.Controllers
             return true;
         }
 
+        private bool IsCustomerOkay(Order order)
+        {
+            var orderCustomer = customerServicegateway.Get(order.customerId);
+            // Call product service to get the product ordered.
+            if (orderCustomer.CreditStanding <= 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
         // PUT orders/5/cancel
         // This action method cancels an order and publishes an OrderStatusChangedMessage
         // with topic set to "cancelled".
         [HttpPut("{id}/cancel")]
         public IActionResult Cancel(int id)
         {
-            throw new NotImplementedException();
+            
+
+            var order = repository.Get(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            if (order.Status != Order.OrderStatus.completed)
+            {
+                return StatusCode(500, "Already shipped");
+            }
+            try
+            {
+                messagePublisher.PublishOrderStatusChangedMessage(
+                    order.customerId, order.OrderLines, "cancelled");
+
+                order.Status = Order.OrderStatus.cancelled;
+                repository.Edit(order);
+                return new NoContentResult();
+            }
+            catch
+            {
+                return StatusCode(500, "An error happened. Try again.");
+            }
 
             // Add code to implement this method.
         }
@@ -120,9 +157,28 @@ namespace OrderApi.Controllers
         [HttpPut("{id}/pay")]
         public IActionResult Pay(int id)
         {
-            throw new NotImplementedException();
+            var order = repository.Get(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            if (order.Status == Order.OrderStatus.shipped)
+            {
+                return StatusCode(500, "Already paid");
+            }
+            try
+            {
+                messagePublisher.PublishOrderStatusChangedMessage(
+                    order.customerId, order.OrderLines, "shipped");
 
-            // Add code to implement this method.
+                order.Status = Order.OrderStatus.shipped;
+                repository.Edit(order);
+                return new NoContentResult();
+            }
+            catch
+            {
+                return StatusCode(500, "An error happened. Try again.");
+            }
         }
 
     }
