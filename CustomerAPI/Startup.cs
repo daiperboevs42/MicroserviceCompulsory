@@ -18,7 +18,7 @@ namespace CustomerAPI
     public class Startup
     {
         string cloudAMQPConnectionString =
-    "host=rattlesnake.rmq.cloudamqp.com;virtualHost=knonqsms;username=knonqsms;password=xhCosYXBsyLlHLadSlcUyzgfIz53B9AJ";
+            "host=rattlesnake-01.rmq.cloudamqp.com;virtualHost=rpjvuqrl;username=rpjvuqrl;password=0d0c1RUA6Xxu7KViPcv4EPkdVZsMKYnk";
 
         public Startup(IConfiguration configuration)
         {
@@ -53,15 +53,17 @@ namespace CustomerAPI
                 var dbInitializer = services.GetService<IDbInitializer>();
                 dbInitializer.Initialize(dbContext);
             }
+
             // Create a message listener in a separate thread.
             Task.Factory.StartNew(() =>
                 new MessageListener(app.ApplicationServices, cloudAMQPConnectionString).Start());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
