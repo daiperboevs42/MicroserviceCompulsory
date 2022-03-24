@@ -13,9 +13,9 @@ namespace CustomerAPI.Controllers
     [Route("[controller]")]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerRepo _custRepo;
+        private readonly ICustomerRepo<Customer> _custRepo;
 
-        public CustomerController(ICustomerRepo repos)
+        public CustomerController(ICustomerRepo<Customer> repos)
         {
             _custRepo = repos;
         }

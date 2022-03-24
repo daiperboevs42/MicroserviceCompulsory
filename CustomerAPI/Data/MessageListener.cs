@@ -52,7 +52,7 @@ namespace CustomerAPI.Data
             using (var scope = provider.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var customerRepo = services.GetService<ICustomerRepo>();
+                var customerRepo = services.GetService<ICustomerRepo<Customer>>();
                 var cust = customerRepo.ReadById(message.CustomerId);
 
 

@@ -1,4 +1,5 @@
 using CustomerAPI.Data;
+using CustomerAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,10 +31,10 @@ namespace CustomerAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CustomerApiContext>(opt => opt.UseInMemoryDatabase("CustomerDB"));
+            services.AddDbContext<CustomerApiContext>(opt => opt.UseInMemoryDatabase("CustomerDb"));
 
             // Register repositories for dependency injection
-            services.AddScoped<ICustomerRepo, CustomerRepo>();
+            services.AddScoped<ICustomerRepo<Customer>, CustomerRepo>();
 
             // Register database initializer for dependency injection
             services.AddTransient<IDbInitializer, DbInitializer>();

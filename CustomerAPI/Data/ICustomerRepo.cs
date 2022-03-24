@@ -2,7 +2,7 @@
 
 namespace CustomerAPI.Data
 {
-    public interface ICustomerRepo
+    public interface ICustomerRepo<T>
     {
         Customer ReadById(int customerID);
         Customer CreateCustomer(Customer customerToCreate);
