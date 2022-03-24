@@ -1,4 +1,5 @@
 ﻿using System;
+using OrderApi.Models;
 using RestSharp;
 using SharedModels;
 
@@ -6,9 +7,9 @@ namespace OrderApi.Infrastructure
 {
     public class ProductServiceGateway : IServiceGateway<ProductDto>
     {
-        string productServiceBaseUrl;
+        Uri productServiceBaseUrl;
 
-        public ProductServiceGateway(string baseUrl)
+        public ProductServiceGateway(Uri baseUrl)
         {
             productServiceBaseUrl = baseUrl;
         }
@@ -16,11 +17,13 @@ namespace OrderApi.Infrastructure
         public ProductDto Get(int id)
         {
             RestClient c = new RestClient(productServiceBaseUrl);
+           
 
-            var request = new RestRequest(id.ToString());
-            var response = c.GetAsync<ProductDto>(request);
-            response.Wait();
-            return response.Result;
+            var request = new RestRequest(id.ToString(), Method.Get);
+            var response = c.ExecuteAsync<ProductDto>(request);
+            //response.Wait();
+            var productData = response.Result;
+            return productData.Data;
         }
     }
 }
