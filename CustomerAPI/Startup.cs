@@ -17,6 +17,9 @@ namespace CustomerAPI
 {
     public class Startup
     {
+        string cloudAMQPConnectionString =
+            "host=rattlesnake-01.rmq.cloudamqp.com;virtualHost=rpjvuqrl;username=rpjvuqrl;password=0d0c1RUA6Xxu7KViPcv4EPkdVZsMKYnk";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
