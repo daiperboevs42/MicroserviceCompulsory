@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Threading;
 using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApi.Data;
-using ProductApi.Models;
+
+using SharedModels;
 
 namespace ProductApi.Infrastructure
 {
@@ -25,12 +26,13 @@ namespace ProductApi.Infrastructure
         {
             using (var bus = RabbitHutch.CreateBus(connectionString))
             {
-                bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkCompleted",
+                bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkCompleted", 
                     HandleOrderCompleted, x => x.WithTopic("completed"));
                 bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkCancelled",
                     HandleOrderCancelled, x => x.WithTopic("cancelled"));
                 bus.PubSub.Subscribe<OrderStatusChangedMessage>("productApiHkShipped",
                     HandleOrderShipped, x => x.WithTopic("shipped"));
+
                 // Add code to subscribe to other OrderStatusChanged events:
                 // * cancelled
                 // * shipped
@@ -78,7 +80,7 @@ namespace ProductApi.Infrastructure
             using (var scope = provider.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var productRepos = services.GetService<IRepository<Product>>();
+                var productRepos = services.GetService<IRepository<Models.Product>>();
 
                 // Reserve items of ordered product (should be a single transaction).
                 // Beware that this operation is not idempotent.
@@ -99,7 +101,7 @@ namespace ProductApi.Infrastructure
             using (var scope = provider.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var productRepos = services.GetService<IRepository<Product>>();
+                var productRepos = services.GetService<IRepository<Models.Product>>();
 
                 // Reserve items of ordered product (should be a single transaction).
                 // Beware that this operation is not idempotent.
@@ -112,5 +114,6 @@ namespace ProductApi.Infrastructure
                 }
             }
         }
+
     }
 }
