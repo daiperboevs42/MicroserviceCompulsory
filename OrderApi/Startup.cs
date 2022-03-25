@@ -20,8 +20,8 @@ namespace OrderApi
         // from other services specified in the docker compose file (which in this solution is
         // the order service).
         //string productServiceBaseUrl = "http://productapi/products/";
-        Uri productServiceBaseUrl = new Uri("http://productapi/products/");
-        Uri CustomerServiceBaseUrl = new Uri("http://customerapi/customers/");
+        string productServiceBaseUrl = "http://productapi/products/";
+        string CustomerServiceBaseUrl = "http://customerapi/customer/";
         // RabbitMQ connection string (I use CloudAMQP as a RabbitMQ server).
         // Remember to replace this connectionstring with your own.
         string cloudAMQPConnectionString =

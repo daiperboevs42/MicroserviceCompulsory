@@ -38,7 +38,7 @@ namespace OrderApi.Data
 
         public IEnumerable<Order> GetAll()
         {
-            return db.Orders.ToList();
+            return db.Orders.Include(o=>o.OrderLines).ToList();
         }
 
         public IEnumerable<Order> GetByCustomer(int customerId)

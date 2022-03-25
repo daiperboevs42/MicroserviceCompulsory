@@ -7,9 +7,9 @@ namespace OrderApi.Infrastructure
 {
     public class ProductServiceGateway : IServiceGateway<ProductDto>
     {
-        Uri productServiceBaseUrl;
+        string productServiceBaseUrl;
 
-        public ProductServiceGateway(Uri baseUrl)
+        public ProductServiceGateway(string baseUrl)
         {
             productServiceBaseUrl = baseUrl;
         }
@@ -21,7 +21,7 @@ namespace OrderApi.Infrastructure
 
             var request = new RestRequest(id.ToString(), Method.Get);
             var response = c.ExecuteAsync<ProductDto>(request);
-            //response.Wait();
+            response.Wait();
             var productData = response.Result;
             return productData.Data;
         }
