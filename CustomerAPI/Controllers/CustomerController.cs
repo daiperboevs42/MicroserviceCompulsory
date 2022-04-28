@@ -22,9 +22,10 @@ namespace CustomerAPI.Controllers
 
         // GET: api/<CustomerController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Customer> Get()
         {
-            return new string[] { "value1", "value2" };
+            //return new string[] { "Martin", "Martin", "Tienesh" };
+            return _custRepo.GetAll();
         }
 
         // GET api/<CustomerController>/5

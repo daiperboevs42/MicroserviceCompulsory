@@ -75,7 +75,7 @@ namespace OrderApi.Controllers
                     }
                     else
                     {
-                        return StatusCode(500, "User's credit is insufficient");
+                        return StatusCode(409, "User's credit is insufficient");
                     }
                 }
                 catch

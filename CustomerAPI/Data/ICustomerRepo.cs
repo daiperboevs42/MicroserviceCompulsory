@@ -1,4 +1,5 @@
 ﻿using CustomerAPI.Models;
+using System.Collections.Generic;
 
 namespace CustomerAPI.Data
 {
@@ -8,5 +9,6 @@ namespace CustomerAPI.Data
         Customer CreateCustomer(Customer customerToCreate);
         Customer EditCustomer(Customer customerToEdit);
         Customer DeleteCustomer(int customerID);
+        IEnumerable<Customer> GetAll();
     }
 }

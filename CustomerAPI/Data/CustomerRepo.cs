@@ -1,5 +1,6 @@
 ﻿using CustomerAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CustomerAPI.Data
@@ -33,6 +34,11 @@ namespace CustomerAPI.Data
             _context.Attach(customerToEdit).State = EntityState.Modified;
             _context.SaveChanges();
             return customerToEdit;
+        }
+
+        public IEnumerable<Customer> GetAll()
+        {
+            return _context.Customers.ToList();
         }
 
         public Customer ReadById(int customerID)
