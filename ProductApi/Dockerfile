@@ -11,7 +11,7 @@ COPY ProductApi.csproj ProductApi/
 RUN dotnet restore "ProductApi/ProductApi.csproj"
 COPY . .
 WORKDIR "/src/ProductApi"
-RUN dotnet build "ProductApi.csproj" -c Release -o /app/build
+RUN dotnet build "Program.cs" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "ProductApi.csproj" -c Release -o /app/publish
