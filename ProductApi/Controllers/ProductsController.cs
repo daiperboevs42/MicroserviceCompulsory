@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductApi.Data;
 using ProductApi.Models;
-using SharedModels;
 
 namespace ProductApi.Controllers
 {
