@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ProductApi.csproj ProductApi/
-COPY SharedModels/SharedModels.csproj SharedModels/
+COPY ../SharedModels/SharedModels.csproj SharedModels/
 RUN dotnet restore "ProductApi/ProductApi.csproj"
 COPY . .
 WORKDIR "/src/ProductApi"
