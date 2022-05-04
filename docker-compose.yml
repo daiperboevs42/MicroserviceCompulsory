@@ -13,10 +13,8 @@ services:
       context: .
       dockerfile: OrderApi/Dockerfile
 
-
   productapi:
     image: ${DOCKER_REGISTRY-}productapi
     build:
       context: .
       dockerfile: ProductApi/Dockerfile
-
