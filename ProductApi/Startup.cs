@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using ProductApi.Data;
 using ProductApi.Infrastructure;
 using ProductApi.Models;
-using SharedModels;
 
 namespace ProductApi
 {
